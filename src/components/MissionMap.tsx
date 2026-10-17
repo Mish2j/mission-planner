@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Map, { Marker, Source, Layer } from "react-map-gl/mapbox";
 import type { MapMouseEvent } from "react-map-gl/mapbox";
 import "mapbox-gl/dist/mapbox-gl.css";
@@ -8,7 +8,12 @@ import type { Mission } from "../types";
 
 import MissionList from "./MissionList";
 
-import { loadMissions, saveMission } from "../storage/MissionStorage";
+import {
+  deleteMission,
+  loadMission,
+  loadMissions,
+  saveMission,
+} from "../storage/MissionStorage";
 import {
   addWaypoint,
   moveWaypoint,
@@ -33,6 +38,13 @@ const MissionMap: React.FC<MissionMapProps> = () => {
 
   const selectedMission = missions.find((m) => m.id === selectedId) ?? null;
   const isDirty = !!selectedMission && dirtyIds.has(selectedMission.id);
+
+  useEffect(() => {
+    if (dirtyIds.size === 0) return;
+    const warn = (e: BeforeUnloadEvent) => e.preventDefault();
+    window.addEventListener("beforeunload", warn);
+    return () => window.removeEventListener("beforeunload", warn);
+  }, [dirtyIds]);
 
   // Replace a mission in state and mark it as having unsaved changes
   const updateMission = (updated: Mission) => {
@@ -80,6 +92,45 @@ const MissionMap: React.FC<MissionMapProps> = () => {
       next.delete(saved.id);
       return next;
     });
+  };
+
+  const handleCancelEdits = () => {
+    if (!selectedMission) return;
+    if (!window.confirm("Discard unsaved changes?")) return;
+
+    const saved = loadMission(selectedMission.id); // last saved version
+    if (saved) {
+      setMissions((prev) => prev.map((m) => (m.id === saved.id ? saved : m)));
+    }
+    setDirtyIds((prev) => {
+      const next = new Set(prev);
+      next.delete(selectedMission.id);
+      return next;
+    });
+    setSelectedWaypointId(null); // the selected waypoint may no longer exist
+  };
+
+  const handleDeleteMission = (id: string) => {
+    const mission = missions.find((m) => m.id === id);
+    if (!mission) return;
+    if (!window.confirm(`Delete "${mission.name}"? This can't be undone.`))
+      return;
+
+    deleteMission(id); // remove from localStorage
+
+    const remaining = missions.filter((m) => m.id !== id);
+    setMissions(remaining); // remove from state
+    setDirtyIds((prev) => {
+      const next = new Set(prev);
+      next.delete(id);
+      return next;
+    });
+
+    // if the deleted mission was open, open another one (or none)
+    if (id === selectedId) {
+      setSelectedId(remaining[0]?.id ?? null);
+      setSelectedWaypointId(null);
+    }
   };
 
   const line: Feature<LineString> = {
@@ -159,12 +210,18 @@ const MissionMap: React.FC<MissionMapProps> = () => {
           <button type="button" onClick={handleSave} disabled={!isDirty}>
             {isDirty ? "Save changes" : "Saved"}
           </button>
+          <button type="button" onClick={handleCancelEdits} disabled={!isDirty}>
+            Cancel edits
+          </button>
         </div>
       )}
       <MissionList
         missions={missions}
+        selectedId={selectedId}
+        dirtyIds={dirtyIds}
         onMissionSelect={selectMissionHandler}
         onMissionCreate={createMissionHandler}
+        onMissionDelete={handleDeleteMission}
       />
     </div>
   );

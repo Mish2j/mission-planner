@@ -124,6 +124,26 @@
   box-shadow: inset 3px 0 0 var(--accent);
 }
 
+.mission-card.is-selected {
+  border-color: #16a34a;
+  box-shadow: inset 3px 0 0 #16a34a;
+}
+
+.mission-card.is-dirty {
+  border-color: #ea580c;
+}
+
+/* both: orange border says "unsaved", green bar says "selected" */
+.mission-card.is-selected.is-dirty {
+  border-color: #ea580c;
+  box-shadow: inset 3px 0 0 #16a34a;
+}
+
+.unsaved-label {
+  color: #ea580c;
+  font-weight: 600;
+}
+
 .mission-text {
   display: flex;
   flex-direction: column;

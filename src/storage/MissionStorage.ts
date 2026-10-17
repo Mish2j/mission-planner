@@ -12,6 +12,11 @@ export function loadMissions(): Mission[] {
   }
 }
 
+/** READ one mission by id from localStorage. */
+export function loadMission(id: string): Mission | undefined {
+  return loadMissions().find((m) => m.id === id);
+}
+
 /** WRITE the full list of missions to localStorage. */
 export function saveMissions(missions: Mission[]) {
   localStorage.setItem(KEY, JSON.stringify(missions));

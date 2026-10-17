@@ -8,14 +8,20 @@ import NewMissionForm from "./NewMissionForm";
 
 interface MissionListProps {
   missions: Mission[];
+  selectedId?: string | null;
+  dirtyIds?: Set<string>;
   onMissionSelect: (missionId: string) => void;
   onMissionCreate: (name: string) => void;
+  onMissionDelete: (id: string) => void;
 }
 
 const MissionList: React.FC<MissionListProps> = ({
   missions,
+  selectedId,
+  dirtyIds = new Set(),
   onMissionSelect,
   onMissionCreate,
+  onMissionDelete,
 }) => {
   const [isCreating, setIsCreating] = useState<boolean>(false);
 
@@ -27,7 +33,10 @@ const MissionList: React.FC<MissionListProps> = ({
             <MissionItem
               key={mission.id}
               mission={mission}
+              isSelected={mission.id === selectedId}
+              isDirty={dirtyIds.has(mission.id)}
               onMissionSelect={onMissionSelect}
+              onMissionDelete={onMissionDelete}
             />
           );
         })}
