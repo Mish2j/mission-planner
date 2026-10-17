@@ -1,45 +1,15 @@
-@import url("https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&display=swap");
-
-:root {
-  --paper: #f2f4f1;
-  --card: #ffffff;
-  --ink: #17262b;
-  --muted: #5b6b70;
-  --line: #d5dcda;
-  --chart: #e6ecea;
-  --chart-grid: #d3dcd9;
-  --accent: #0e6b7c;
-  --flag: #d9822b;
-}
-
-.app-shell {
-  display: grid;
-  grid-template-columns: 340px 1fr;
-  height: 100vh;
-  height: 100dvh;
-  font-family:
-    "Instrument Sans",
-    system-ui,
-    -apple-system,
-    "Segoe UI",
-    sans-serif;
-  color: var(--ink);
-}
-
-.map-pane {
-  position: relative;
-  min-width: 0;
-  min-height: 0;
-}
-
-/* ---------- Sidebar ---------- */
-
 .sidebar {
   display: flex;
   flex-direction: column;
-  min-height: 0;
-  background: var(--paper);
-  border-right: 1px solid var(--line);
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 10px;
+  width: 250px;
+  height: 95%;
+  background: #000000e8;
+  margin-top: auto;
+  margin-bottom: auto;
 }
 
 .sidebar-header {
@@ -48,6 +18,7 @@
   justify-content: space-between;
   gap: 12px;
   padding: 20px 20px 12px;
+  color: #fff;
 }
 
 .sidebar-header h1 {
@@ -68,6 +39,8 @@
   font-weight: 500;
   cursor: pointer;
   transition: background 0.15s;
+  width: 90%;
+  margin: 10px auto;
 }
 
 .new-btn:hover {
@@ -81,156 +54,4 @@
   color: var(--muted);
   font-size: 0.9rem;
   line-height: 1.5;
-}
-
-/* ---------- Mission cards ---------- */
-
-.mission-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin: 0;
-  padding: 8px 12px 20px;
-  list-style: none;
-  overflow-y: auto;
-}
-
-.mission-card {
-  display: grid;
-  grid-template-columns: 64px 1fr;
-  gap: 14px;
-  align-items: center;
-  width: 100%;
-  padding: 10px 14px 10px 10px;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  background: transparent;
-  color: inherit;
-  font: inherit;
-  text-align: left;
-  cursor: pointer;
-  transition:
-    background 0.15s,
-    border-color 0.15s;
-}
-
-.mission-card:hover {
-  background: var(--card);
-}
-
-.mission-card[aria-current="true"] {
-  background: var(--card);
-  border-color: var(--accent);
-  box-shadow: inset 3px 0 0 var(--accent);
-}
-
-.mission-card.is-selected {
-  border-color: #16a34a;
-  box-shadow: inset 3px 0 0 #16a34a;
-}
-
-.mission-card.is-dirty {
-  border-color: #ea580c;
-}
-
-/* both: orange border says "unsaved", green bar says "selected" */
-.mission-card.is-selected.is-dirty {
-  border-color: #ea580c;
-  box-shadow: inset 3px 0 0 #16a34a;
-}
-
-.unsaved-label {
-  color: #ea580c;
-  font-weight: 600;
-}
-
-.mission-text {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  min-width: 0;
-}
-
-.mission-name {
-  overflow: hidden;
-  font-size: 0.95rem;
-  font-weight: 600;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-
-.mission-meta {
-  color: var(--muted);
-  font-size: 0.8rem;
-  line-height: 1.35;
-}
-
-/* ---------- Route thumbnail ---------- */
-
-.route-shape {
-  display: block;
-  width: 64px;
-  height: 48px;
-  border-radius: 6px;
-  background-color: var(--chart);
-  background-image:
-    linear-gradient(var(--chart-grid) 1px, transparent 1px),
-    linear-gradient(90deg, var(--chart-grid) 1px, transparent 1px);
-  background-size: 16px 16px;
-}
-
-.route-line {
-  fill: none;
-  stroke: var(--accent);
-  stroke-width: 1.75;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.route-stop {
-  fill: var(--accent);
-}
-
-.route-start {
-  fill: #fff;
-  stroke: var(--accent);
-  stroke-width: 1.75;
-}
-
-.route-end {
-  fill: var(--flag);
-}
-
-.route-empty {
-  fill: none;
-  stroke: var(--muted);
-  stroke-width: 1.25;
-  stroke-dasharray: 2.5 2.5;
-}
-
-/* ---------- Focus + responsive ---------- */
-
-.mission-card:focus-visible,
-.new-btn:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-}
-
-@media (max-width: 720px) {
-  .app-shell {
-    grid-template-columns: 1fr;
-    grid-template-rows: 42% 1fr;
-  }
-
-  .sidebar {
-    border-right: 0;
-    border-bottom: 1px solid var(--line);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .mission-card,
-  .new-btn {
-    transition: none;
-  }
 }

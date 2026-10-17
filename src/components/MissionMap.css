@@ -1,0 +1,79 @@
+.map-actions {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 1;
+  display: flex;
+  gap: 8px;
+}
+
+.map-actions button {
+  padding: 8px 14px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  transition:
+    background 0.15s,
+    border-color 0.15s,
+    color 0.15s;
+}
+
+.map-btn--primary {
+  background: #0e6b7c;
+  color: #fff;
+}
+.map-btn--primary:hover:not(:disabled) {
+  background: #0a5563;
+}
+
+.map-btn--secondary {
+  background: #fff;
+  color: #17262b;
+  border-color: #d5dcda;
+}
+.map-btn--secondary:hover:not(:disabled) {
+  background: #f2f4f1;
+}
+
+.map-btn--danger {
+  background: #fff;
+  color: #dc2626;
+  border-color: #dc2626;
+}
+.map-btn--danger:hover:not(:disabled) {
+  background: #dc2626;
+  color: #fff;
+}
+
+.map-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.map-btn:focus-visible {
+  outline: 2px solid #0e6b7c;
+  outline-offset: 2px;
+}
+
+@media (max-width: 720px) {
+  .map-actions {
+    left: 12px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+}
+
+.mission-list {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  margin: 0;
+  padding: 8px 12px 20px;
+  list-style: none;
+  overflow-y: auto;
+}

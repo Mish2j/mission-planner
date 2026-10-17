@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 
+import "./NewMissionForm.css";
+
 interface NewMissionFormProps {
   onCreate: (name: string) => void;
   onCancel: () => void;
@@ -18,18 +20,30 @@ const NewMissionForm: React.FC<NewMissionFormProps> = ({
   };
 
   return (
-    <form onSubmit={submit}>
+    <form className="new-mission-form" onSubmit={submit}>
       <input
+        className="new-mission-input"
+        autoFocus
         value={name}
         onChange={(e) => setName(e.target.value)}
         placeholder="Mission name"
       />
-      <button type="submit" disabled={!name.trim()}>
-        Create mission
-      </button>
-      <button type="button" onClick={onCancel}>
-        Cancel
-      </button>
+      <div className="new-mission-actions">
+        <button
+          type="button"
+          className="form-btn form-btn--secondary"
+          onClick={onCancel}
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          className="form-btn form-btn--primary"
+          disabled={!name.trim()}
+        >
+          Create
+        </button>
+      </div>
     </form>
   );
 };

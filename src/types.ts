@@ -2,7 +2,7 @@ export interface Mission {
   id: string;
   name: string;
   waypoints: Waypoint[];
-  updatedAt: string; // ISO date
+  updatedAt: string;
 }
 
 export interface Waypoint {

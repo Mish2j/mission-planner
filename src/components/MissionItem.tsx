@@ -1,12 +1,17 @@
 import React from "react";
+
 import type { Mission } from "../types";
 
-import "./MissionList.css";
+// import "./MissionList.css";
+import "./MissionItem.css";
 
 function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString("en-US", {
+  return new Date(iso).toLocaleString("en-US", {
+    year: "numeric",
     month: "short",
     day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
   });
 }
 
@@ -40,25 +45,26 @@ const MissionItem: React.FC<MissionItemProps> = ({
       <button
         type="button"
         className={itemClassName}
-        //   aria-current={m.id === selectedId}
-        //   onClick={() => onSelect(m.id)}
         onClick={() => onMissionSelect(mission.id)}
       >
-        {/* <RouteShape mission={m} />  */}
         <span className="mission-text">
-          {isDirty && <span>Unsaved Changes</span>}
           <span className="mission-name">{mission.name}</span>
           <span className="mission-meta">
-            {count} {count === 1 ? "waypoint" : "waypoints"}, updated{" "}
-            {formatDate(mission.updatedAt)}
+            <span>
+              {count} {count === 1 ? "waypoint" : "waypoints"}
+            </span>
+            <span>Updated {formatDate(mission.updatedAt)}</span>
           </span>
+          {isDirty && <span className="unsaved-label">Unsaved</span>}
         </span>
       </button>
-      <button type="button" onClick={() => onMissionDelete(mission.id)}>
+      <button
+        type="button"
+        className="mission-delete-btn"
+        onClick={() => onMissionDelete(mission.id)}
+      >
         Delete
       </button>
-      <button type="button">Edit</button>
-      <button type="button">Save</button>
     </li>
   );
 };
