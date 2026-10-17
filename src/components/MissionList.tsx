@@ -1,27 +1,40 @@
-import React from "react";
+import React, { useState } from "react";
 
-import { missions } from "../data";
-
-import type { Mission } from "../types";
+import MissionItem from "./MissionItem";
 
 import "./MissionList.css";
-
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-  });
-}
-
-const onCreate = (e: any) => {
-  console.log("onCreate: ", e);
-};
+import type { Mission } from "../types";
+import NewMissionForm from "./NewMissionForm";
 
 interface MissionListProps {
+  missions: Mission[];
   onMissionSelect: (missionId: string) => void;
+  onMissionCreate: (name: string) => void;
 }
 
-const MissionList: React.FC<MissionListProps> = ({ onMissionSelect }) => {
+const MissionList: React.FC<MissionListProps> = ({
+  missions,
+  onMissionSelect,
+  onMissionCreate,
+}) => {
+  const [isCreating, setIsCreating] = useState<boolean>(false);
+
+  const displayMissionList = () => {
+    return (
+      <ul className="mission-list">
+        {missions.map((mission) => {
+          return (
+            <MissionItem
+              key={mission.id}
+              mission={mission}
+              onMissionSelect={onMissionSelect}
+            />
+          );
+        })}
+      </ul>
+    );
+  };
+
   return (
     <aside
       style={{
@@ -45,35 +58,24 @@ const MissionList: React.FC<MissionListProps> = ({ onMissionSelect }) => {
           No missions yet. Create one, then click the map to place waypoints.
         </p>
       ) : (
-        <ul className="mission-list">
-          {missions.map((m) => {
-            const count = m.waypoints.length;
-            return (
-              <li key={m.id}>
-                <button
-                  type="button"
-                  className="mission-card"
-                  //   aria-current={m.id === selectedId}
-                  //   onClick={() => onSelect(m.id)}
-                  onClick={() => onMissionSelect(m.id)}
-                >
-                  {/* <RouteShape mission={m} />  */}
-                  <span className="mission-text">
-                    <span className="mission-name">{m.name}</span>
-                    <span className="mission-meta">
-                      {count} {count === 1 ? "waypoint" : "waypoints"}, updated{" "}
-                      {formatDate(m.updatedAt)}
-                    </span>
-                  </span>
-                </button>
-              </li>
-            );
-          })}
-        </ul>
+        displayMissionList()
       )}
-      <button type="button" className="new-btn" onClick={onCreate}>
+      <button
+        type="button"
+        className="new-btn"
+        onClick={() => setIsCreating(true)}
+      >
         New mission
       </button>
+      {isCreating && (
+        <NewMissionForm
+          onCreate={(name: string) => {
+            onMissionCreate(name); // handleCreateMission from App
+            setIsCreating(false); // close the form after creating
+          }}
+          onCancel={() => setIsCreating(false)}
+        />
+      )}
     </aside>
   );
 };

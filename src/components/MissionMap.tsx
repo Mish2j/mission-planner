@@ -8,7 +8,8 @@ import type { Mission } from "../types";
 
 import MissionList from "./MissionList";
 
-import { missions } from "../data";
+import { loadMissions, saveMission } from "../storage/MissionStorage";
+import { newMission } from "../missions";
 
 interface MissionMapProps {
   mission: Mission;
@@ -16,14 +17,23 @@ interface MissionMapProps {
 }
 
 const MissionMap: React.FC<MissionMapProps> = () => {
-  const [mission, setMission] = useState<Mission | null>(missions[0]);
+  const [missions, setMissions] = useState<Mission[]>(loadMissions);
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
+  const selectedMission =
+    missions.find((mission) => mission.id === selectedId) ?? missions[0];
+  console.log("selectedId: ", selectedId);
   const selectMissionHandler = (missionId: string) => {
-    // TODO: replace missions[0] ??
-    const selectedMission =
-      missions.find((mission) => mission.id === missionId) ?? missions[0];
-    setMission(selectedMission);
+    setSelectedId(missionId);
+  };
+
+  const createMissionHandler = (name: string) => {
+    const trimmed = name.trim();
+    if (!trimmed) return;
+
+    const mission = saveMission(newMission(trimmed));
+    setMissions((prev) => [mission, ...prev]);
+    setSelectedId(mission.id);
   };
 
   // const selected = missions.find((m) => m.id === selectedId) ?? missions[0];
@@ -69,7 +79,9 @@ const MissionMap: React.FC<MissionMapProps> = () => {
     properties: {},
     geometry: {
       type: "LineString",
-      coordinates: mission.waypoints.map((w) => [w.lng, w.lat]),
+      coordinates: selectedMission?.waypoints?.map((w) => [w.lng, w.lat]) || [
+        0, 0,
+      ],
     },
   };
 
@@ -90,36 +102,41 @@ const MissionMap: React.FC<MissionMapProps> = () => {
           />
         </Source>
 
-        {mission.waypoints.map((w, i) => (
-          <Marker
-            key={w.id}
-            longitude={w.lng}
-            latitude={w.lat}
-            draggable
-            onDragEnd={(e) => moveWaypoint(w.id, e.lngLat.lng, e.lngLat.lat)}
-            onClick={(e) => {
-              e.originalEvent.stopPropagation(); // don't add a waypoint underneath
-              setSelectedId(w.id);
-            }}
-          >
-            <div
-              style={{
-                background: w.id === selectedId ? "#dc2626" : "#2563eb",
-                color: "white",
-                borderRadius: "50%",
-                width: 28,
-                height: 28,
-                display: "grid",
-                placeItems: "center",
-                fontSize: 12,
+        {selectedMission &&
+          selectedMission.waypoints.map((w, i) => (
+            <Marker
+              key={w.id}
+              longitude={w.lng}
+              latitude={w.lat}
+              draggable
+              onDragEnd={(e) => moveWaypoint(w.id, e.lngLat.lng, e.lngLat.lat)}
+              onClick={(e) => {
+                e.originalEvent.stopPropagation(); // don't add a waypoint underneath
+                setSelectedId(w.id);
               }}
             >
-              {i + 1}
-            </div>
-          </Marker>
-        ))}
+              <div
+                style={{
+                  background: w.id === selectedId ? "#dc2626" : "#2563eb",
+                  color: "white",
+                  borderRadius: "50%",
+                  width: 28,
+                  height: 28,
+                  display: "grid",
+                  placeItems: "center",
+                  fontSize: 12,
+                }}
+              >
+                {i + 1}
+              </div>
+            </Marker>
+          ))}
       </Map>
-      <MissionList onMissionSelect={selectMissionHandler} />
+      <MissionList
+        missions={missions}
+        onMissionSelect={selectMissionHandler}
+        onMissionCreate={createMissionHandler}
+      />
     </div>
   );
 };
