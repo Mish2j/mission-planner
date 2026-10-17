@@ -8,6 +8,8 @@ import MissionItem from "./MissionItem";
 import "./MissionList.css";
 
 interface MissionListProps {
+  isOpen: boolean;
+  onClose: () => void;
   missions: Mission[];
   selectedId?: string | null;
   dirtyIds?: Set<string>;
@@ -17,6 +19,8 @@ interface MissionListProps {
 }
 
 const MissionList: React.FC<MissionListProps> = ({
+  isOpen,
+  onClose,
   missions,
   selectedId,
   dirtyIds = new Set(),
@@ -46,9 +50,17 @@ const MissionList: React.FC<MissionListProps> = ({
   };
 
   return (
-    <aside className="sidebar">
+    <aside className={`sidebar ${isOpen ? "is-open" : ""}`}>
       <header className="sidebar-header">
         <h1>Missions</h1>
+        <button
+          type="button"
+          className="sidebar-close"
+          onClick={onClose}
+          aria-label="Close missions"
+        >
+          Close
+        </button>
       </header>
 
       {isCreating && (

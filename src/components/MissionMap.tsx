@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 
 import "mapbox-gl/dist/mapbox-gl.css";
-import Map, { Marker, Source, Layer } from "react-map-gl/mapbox";
+import Map, { Source, Layer } from "react-map-gl/mapbox";
 
 import type { MapMouseEvent } from "react-map-gl/mapbox";
 import type { Feature, LineString } from "geojson";
@@ -21,10 +21,13 @@ import {
 } from "../missions";
 
 import MissionList from "./MissionList";
+import MapActions from "./MapActions";
+import WaypointMarker from "./WaypointMarker";
 
 import "./MissionMap.css";
 
 const MissionMap: React.FC = () => {
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   const [missions, setMissions] = useState<Mission[]>(loadMissions);
   const [selectedId, setSelectedId] = useState<string | null>(
     () => missions[0]?.id ?? null
@@ -157,7 +160,11 @@ const MissionMap: React.FC = () => {
   };
 
   return (
-    <div style={{ width: "100%", position: "relative" }}>
+    <div className="container">
+      <div
+        className={`sidebar-backdrop ${sidebarOpen ? "is-open" : ""}`}
+        onClick={() => setSidebarOpen(false)}
+      />
       <Map
         mapboxAccessToken={import.meta.env.VITE_MAPBOX_TOKEN}
         initialViewState={{ longitude: -118.2437, latitude: 34.0522, zoom: 10 }}
@@ -174,69 +181,44 @@ const MissionMap: React.FC = () => {
         </Source>
 
         {selectedMission?.waypoints.map((w, i) => (
-          <Marker
+          <WaypointMarker
             key={w.id}
-            longitude={w.lng}
-            latitude={w.lat}
-            draggable
-            onDragEnd={(e) =>
-              markerDragEndHandler(w.id, e.lngLat.lng, e.lngLat.lat)
-            }
-            onClick={(e) => {
-              e.originalEvent.stopPropagation(); // don't add a waypoint underneath
-              setSelectedWaypointId(w.id);
-            }}
-          >
-            <div
-              style={{
-                background: w.id === selectedWaypointId ? "#dc2626" : "#2563eb",
-                color: "white",
-                borderRadius: "50%",
-                width: 28,
-                height: 28,
-                display: "grid",
-                placeItems: "center",
-                fontSize: 12,
-              }}
-            >
-              {i + 1}
-            </div>
-          </Marker>
+            waypoint={w}
+            index={i}
+            isSelected={w.id === selectedWaypointId}
+            onSelect={setSelectedWaypointId}
+            onDragEnd={markerDragEndHandler}
+          />
         ))}
       </Map>
       {selectedMission && (
-        <div className="map-actions">
-          <button
-            type="button"
-            className="map-btn map-btn--danger"
-            onClick={deleteWaypointHandler}
-            disabled={!selectedWaypointId}
-          >
-            Delete waypoint
-          </button>
-          <button
-            type="button"
-            className="map-btn map-btn--secondary"
-            onClick={cancelEditsHandler}
-            disabled={!isDirty}
-          >
-            Cancel edits
-          </button>
-          <button
-            type="button"
-            className="map-btn map-btn--primary"
-            onClick={saveMissionHandler}
-            disabled={!isDirty}
-          >
-            {isDirty ? "Save changes" : "Saved"}
-          </button>
-        </div>
+        <MapActions
+          hasSelectedWaypoint={!!selectedWaypointId}
+          isDirty={isDirty}
+          onDeleteWaypoint={deleteWaypointHandler}
+          onCancelEdits={cancelEditsHandler}
+          onSave={saveMissionHandler}
+        />
       )}
+
+      <button
+        type="button"
+        className="map-btn map-btn--secondary sidebar-toggle"
+        onClick={() => setSidebarOpen(true)}
+      >
+        Missions
+      </button>
+
       <MissionList
+        isOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
         missions={missions}
         selectedId={selectedId}
         dirtyIds={dirtyIds}
-        onMissionSelect={selectMissionHandler}
+        onMissionSelect={(missionId: string) => {
+          selectMissionHandler(missionId);
+          setSidebarOpen(false);
+        }}
         onMissionCreate={createMissionHandler}
         onMissionDelete={handleDeleteMission}
       />

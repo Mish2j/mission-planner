@@ -12,6 +12,55 @@
   margin-bottom: auto;
 }
 
+.sidebar-close,
+.sidebar-backdrop {
+  display: none;
+}
+
+@media (max-width: 720px) {
+  .sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 20;
+    width: min(320px, 85vw);
+    transform: translateX(-100%);
+    transition: transform 0.2s ease;
+    box-shadow: 0 0 24px rgba(0, 0, 0, 0.25);
+  }
+
+  .sidebar.is-open {
+    transform: translateX(0);
+  }
+
+
+  .sidebar-close {
+    display: block;
+    padding: 6px 10px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: var(--paper);
+    color: var(--ink);
+  }
+
+  .sidebar-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 10;
+    background: rgba(0, 0, 0, 0.4);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+  }
+
+  .sidebar-backdrop.is-open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
 .sidebar-header {
   display: flex;
   align-items: center;

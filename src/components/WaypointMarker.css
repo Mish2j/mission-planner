@@ -1,0 +1,15 @@
+.waypoint-marker {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #2563eb;
+  color: #fff;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.waypoint-marker.is-selected {
+  background: #dc2626;
+}
